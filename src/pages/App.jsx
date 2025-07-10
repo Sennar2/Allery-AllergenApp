@@ -1,3 +1,4 @@
+
 // src/pages/App.jsx
 import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
@@ -9,16 +10,19 @@ import RefreshButton from "../components/RefreshButton";
 import Footer from "../components/Footer";
 import { FaSearch } from "react-icons/fa";
 
-// Helper: Capitalize Each Word
+const MASTER_CONFIG_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXJDtz0TP8191ExwSFKcp8Jqsrd43dUROfFLzKEjSDPKlcnGx4GT0BMO6IjA3DpL4O6yzo60p8492M/pub?output=csv";
+
+function getSubdomain() {
+  const host = window.location.hostname;
+  const parts = host.split(".");
+  return parts.length > 2 ? parts[0].toLowerCase().trim() : "default";
+}
+
 const toTitleCase = (str) =>
-  str
-    ?.toLowerCase()
+  str?.toLowerCase()
     .split(" ")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
-
-const CONFIG_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vShydY4mFLVb8956vc5-7bIpGKd0iVG85JkiQ_wt3uLgvWRZabzpiU0vSIsdG24Jp16-zz9vfPb2gfv/pub?output=csv";
 
 function App() {
   const [menu, setMenu] = useState([]);
@@ -34,13 +38,49 @@ function App() {
   const [logos, setLogos] = useState({});
   const [sheetBaseUrls, setSheetBaseUrls] = useState({});
   const [tabGids, setTabGids] = useState({});
+  const [configUrl, setConfigUrl] = useState("");
 
-  // Load config
+  const subdomain = getSubdomain();
+  console.log("🔍 Detected subdomain:", subdomain);
+
   useEffect(() => {
-    Papa.parse(CONFIG_URL, {
+    Papa.parse(MASTER_CONFIG_URL, {
       download: true,
       header: true,
       complete: (results) => {
+        console.log("📄 Raw tenant config data:", results.data);
+
+        const cleaned = results.data.map(row => ({
+          subdomain: row.subdomain?.trim().toLowerCase(),
+          config_url: row.config_url?.trim(),
+          company_name: row.company_name?.trim()
+        }));
+
+        console.log("🧼 Normalized tenant list:", cleaned);
+
+        const match = cleaned.find(row => row.subdomain === subdomain);
+
+        if (!match) {
+          console.error("❌ No matching subdomain found for:", subdomain);
+          alert(`No config found for subdomain: ${subdomain}`);
+          return;
+        }
+
+        console.log("✅ Matched tenant:", match);
+        setConfigUrl(match.config_url);
+      }
+    });
+  }, [subdomain]);
+
+  useEffect(() => {
+    if (!configUrl) return;
+
+    Papa.parse(configUrl, {
+      download: true,
+      header: true,
+      complete: (results) => {
+        console.log("📦 Loaded tenant config sheet:", results.data);
+
         const locs = [];
         const logoMap = {};
         const sheetMap = {};
@@ -48,18 +88,19 @@ function App() {
 
         results.data.forEach((row) => {
           const loc = row.location?.trim().toLowerCase();
-          if (loc) {
-            locs.push(loc);
-            logoMap[loc] = row.logo_url?.trim();
-            sheetMap[loc] = row.sheet_base_url?.trim();
-            gidMap[loc] = {
-              food: row.food_gid?.trim(),
-              drinks: row.drinks_gid?.trim(),
-              other: row.other_gid?.trim(),
-            };
-          }
+          if (!loc) return;
+
+          locs.push(loc);
+          logoMap[loc] = row.logo_url?.trim();
+          sheetMap[loc] = row.sheet_base_url?.trim();
+          gidMap[loc] = {
+            food: row.food_gid?.trim(),
+            drinks: row.drinks_gid?.trim(),
+            other: row.other_gid?.trim(),
+          };
         });
 
+        console.log("📍 Locations:", locs);
         setLocations(locs);
         setLogos(logoMap);
         setSheetBaseUrls(sheetMap);
@@ -68,40 +109,36 @@ function App() {
         if (!location && locs.length > 0) {
           setLocation(locs[0]);
         }
-      },
+      }
     });
-  }, []);
+  }, [configUrl]);
 
-  // Load menu
   useEffect(() => {
     if (!location || !sheetBaseUrls[location] || !tabGids[location]?.[tab]) return;
 
     const sheetUrl = `${sheetBaseUrls[location]}&gid=${tabGids[location][tab]}`;
+    console.log("📥 Fetching menu from:", sheetUrl);
 
     Papa.parse(sheetUrl, {
       download: true,
       header: true,
       complete: (results) => {
-        const items = results.data.filter((row) => row["Dish Name"]);
+        const items = results.data.filter(row => row["Dish Name"]);
+        console.log("🍽 Menu items:", items);
         setMenu(items);
-      },
+      }
     });
   }, [location, tab, sheetBaseUrls, tabGids]);
 
-  const logoToShow =
-    logos[location] && logos[location].startsWith("http")
-      ? logos[location]
-      : "/logos/safebite.png";
+  const logoToShow = logos[location]?.startsWith("http")
+    ? logos[location]
+    : "/logos/safebite.png";
 
   if (!accepted) {
     return (
       <div className="h-screen flex items-center justify-center bg-white px-4 text-center">
         <div>
-          <img
-            src="/logos/safebite.png"
-            alt="SafeBite"
-            className="mx-auto h-20 mb-4"
-          />
+          <img src="/logos/safebite.png" alt="SafeBite" className="mx-auto h-20 mb-4" />
           <p className="mb-4 text-gray-700 text-lg max-w-lg">
             Welcome to SafeBite. Confirm to proceed to your menu.
           </p>
@@ -118,13 +155,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b py-4 shadow-sm text-center">
-        <img
-          src={logoToShow}
-          alt="Logo"
-          className="h-16 mx-auto object-contain mb-4"
-        />
+        <img src={logoToShow} alt="Logo" className="h-16 mx-auto object-contain mb-4" />
         <select
           value={location}
           onChange={(e) => setLocation(e.target.value)}
@@ -138,23 +170,20 @@ function App() {
         </select>
       </header>
 
-      {/* Tabs + Search Icon */}
       <div className="flex items-center justify-center gap-3 py-5 text-sm font-medium">
         {["food", "drinks", "other"].map((key) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             className={`px-4 py-2 rounded-full transition ${
-              tab === key
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-gray-200"
+              tab === key ? "bg-green-600 text-white" : "text-gray-700 hover:bg-gray-200"
             }`}
           >
             {toTitleCase(key)}
           </button>
         ))}
         <button
-          onClick={() => setShowSearch((prev) => !prev)}
+          onClick={() => setShowSearch(prev => !prev)}
           className="text-gray-600 text-xl hover:text-green-600"
           aria-label="Toggle search"
         >
@@ -162,14 +191,12 @@ function App() {
         </button>
       </div>
 
-      {/* Search Bar */}
       {showSearch && (
         <div className="px-4 mb-4">
           <SearchBar search={search} setSearch={setSearch} />
         </div>
       )}
 
-      {/* Filter Panel */}
       <FilterPanel
         filters={filters}
         setFilters={setFilters}
@@ -177,7 +204,6 @@ function App() {
         setShowHidden={setShowHidden}
       />
 
-      {/* Menu */}
       <MenuList
         items={menu}
         filters={filters}
@@ -185,13 +211,11 @@ function App() {
         showHidden={showHidden}
       />
 
-      {/* Actions */}
       <div className="flex justify-center gap-4 p-4">
         <QRCodeGenerator />
         <RefreshButton onClick={() => setAccepted(false)} />
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
