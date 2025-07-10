@@ -132,15 +132,15 @@ function App() {
 
   const logoToShow = logos[location]?.startsWith("http")
     ? logos[location]
-    : "/logos/safebite.png";
+    : "/logos/allerlylogo.png";
 
   if (!accepted) {
     return (
       <div className="h-screen flex items-center justify-center bg-white px-4 text-center">
         <div>
-          <img src="/logos/safebite.png" alt="SafeBite" className="mx-auto h-20 mb-4" />
+          <img src="/logos/allerlylogo.png" alt="Allerly" className="mx-auto h-20 mb-4" />
           <p className="mb-4 text-gray-700 text-lg max-w-lg">
-            Welcome to SafeBite. Confirm to proceed to your menu.
+            Welcome to Allerly. Confirm to proceed to your menu.
           </p>
           <button
             onClick={() => setAccepted(true)}
