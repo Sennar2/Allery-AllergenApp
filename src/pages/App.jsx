@@ -213,7 +213,7 @@ function App() {
 
       <div className="flex justify-center gap-4 p-4">
         <QRCodeGenerator />
-        <RefreshButton onClick={() => setAccepted(false)} />
+        <RefreshButton onRefresh={() => window.location.href = "/"} />
       </div>
 
       <Footer />
