@@ -78,7 +78,8 @@ function getDietaryIcon(tag) {
     vegan: "🌱",
     vegetarian: "🥕",
     glutenfree: "🚫🌾",
-    halal: "🕌",
+    veganavailable: "🌱✅", 
+    glutenfreeavailable: "🌾✅,
   };
   return icons[tag.toLowerCase()] || "✅";
 }
