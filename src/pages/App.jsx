@@ -140,9 +140,9 @@ function App() {
         <div>
           <img src="/logos/allerlylogo.png" alt="Allerly" className="mx-auto h-20 mb-4" />
           <p className="mb-4 text-gray-700 text-lg max-w-lg">
-            Welcome to Allerly. Could you please confirm that you would like to proceed to your menu? 
+            Welcome to Allerly. Click on accept to start. 
             Data provided by the venue might not be a reflection of a last-minute menu change. 
-            Always check with your server.  
+            Always check with your server.
           </p>
           <button
             onClick={() => setAccepted(true)}
