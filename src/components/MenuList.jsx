@@ -26,6 +26,12 @@ function getDietaryTags(item) {
     item.GlutenFree?.toLowerCase() === "yes"
   )
     tags.push("glutenfree");
+  if (filters.veganavailable && item["Vegan Available"]?.toLowerCase() !== "yes") {
+  return false;
+}
+if (filters.glutenfreeavailable && item["Gluten Free Available"]?.toLowerCase() !== "yes") {
+  return false;
+}
   if (item.Halal?.toLowerCase() === "yes") tags.push("halal");
   return tags;
 }
@@ -77,9 +83,9 @@ function getDietaryIcon(tag) {
   const icons = {
     vegan: "🌱",
     vegetarian: "🥕",
-    glutenfree: "🚫🌾",
-    veganavailable: "🌱✅", 
-    glutenfreeavailable: "🌾✅,
+    gluten free: "🚫🌾",
+    vegana vailable: "🌱✅", 
+    glutenfree available: "🌾✅,
   };
   return icons[tag.toLowerCase()] || "✅";
 }
