@@ -26,13 +26,13 @@ function getDietaryTags(item) {
     item.GlutenFree?.toLowerCase() === "yes"
   )
     tags.push("glutenfree");
-  if (filters.veganavailable && item["Vegan Available"]?.toLowerCase() !== "yes") {
-  return false;
-}
-if (filters.glutenfreeavailable && item["Gluten Free Available"]?.toLowerCase() !== "yes") {
-  return false;
-}
   if (item.Halal?.toLowerCase() === "yes") tags.push("halal");
+
+  // ✅ NEW OPTIONS
+  if (item["Vegan Available"]?.toLowerCase() === "yes") tags.push("veganavailable");
+  if (item["Gluten Free Available"]?.toLowerCase() === "yes")
+    tags.push("glutenfreeavailable");
+
   return tags;
 }
 
@@ -46,9 +46,18 @@ function matchesFilters(item, filters) {
 
     const tagLower = tag.toLowerCase();
 
+    // Exclude allergens
     if (allergens.includes(tagLower)) return false;
 
-    const isDietary = ["vegan", "vegetarian", "glutenfree", "halal"];
+    // ✅ Include new dietary filters
+    const isDietary = [
+      "vegan",
+      "vegetarian",
+      "glutenfree",
+      "halal",
+      "veganavailable",
+      "glutenfreeavailable",
+    ];
     if (isDietary.includes(tagLower) && !dietary.includes(tagLower)) {
       return false;
     }
@@ -83,9 +92,10 @@ function getDietaryIcon(tag) {
   const icons = {
     vegan: "🌱",
     vegetarian: "🥕",
-    gluten free: "🚫🌾",
-    vegana vailable: "🌱✅", 
-    glutenfree available: "🌾✅,
+    glutenfree: "🚫🌾",
+    halal: "🕌",
+    veganavailable: "🌱✅", // ✅ new
+    glutenfreeavailable: "🌾✅", // ✅ new
   };
   return icons[tag.toLowerCase()] || "✅";
 }
@@ -125,7 +135,6 @@ const MenuList = ({ items = [], filters = {}, search = "", showHidden }) => {
         return (
           <div key={category}>
             <h2 className="text-xl font-semibold mb-2 text-green-700 text-center">
-
               {category}
             </h2>
             <ul className="space-y-4">
@@ -140,7 +149,7 @@ const MenuList = ({ items = [], filters = {}, search = "", showHidden }) => {
                     {item["Dish Name"]}
                   </h3>
 
-                  {/* NEW: Dish Description */}
+                  {/* Dish Description */}
                   {item.Description && (
                     <p className="text-sm text-gray-600 mt-1 italic">
                       {item.Description}
