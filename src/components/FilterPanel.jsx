@@ -7,7 +7,8 @@ const ALLERGENS = [
 ];
 
 const DIETARY = [
-  "Vegan", "Vegetarian", "GlutenFree", "NutFree", "DairyFree", "LowSugar", "Halal"
+  "Vegan", "Vegetarian", "GlutenFree", "NutFree", "DairyFree",
+  "VeganAvailable", "GlutenFreeAvailable"
 ];
 
 const getIcon = (tag) => {
@@ -17,7 +18,7 @@ const getIcon = (tag) => {
     molluscs: "🐚", celery: "🥬", mustard: "🌿", sesame: "⚪",
     lupin: "🌸", sulphites: "💨",
     vegan: "🌱", vegetarian: "🥕", glutenfree: "🚫🌾",
-    nutfree: "🚫🥜", dairyfree: "🚫🥛", lowsugar: "🍬❌"
+    nutfree: "🚫🥜", dairyfree: "🚫🥛", veganavailable: "🌱✅", glutenfreeavailable: "🌾✅"
     // Halal intentionally has no icon
   };
   return icons[tag.toLowerCase()] || "";
