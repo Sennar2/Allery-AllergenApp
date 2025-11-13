@@ -36,7 +36,7 @@ const FilterPanel = ({ filters, setFilters, showHidden, setShowHidden }) => {
 
   return (
     <div className="px-4 mt-4">
-      <div className="border border-gray-200 rounded-xl p-6 shadow-sm bg-white">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center border border-green-100">
         {/* Allergen Filters */}
         <div className="mb-5 text-center">
           <p className="font-semibold text-lg text-red-700 mb-3">
