@@ -167,7 +167,7 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gradient-to-br from-green-50 via-white to-emerald-50 px-4">
       <header className="bg-white border-b py-4 shadow-sm text-center">
         <img src={logoToShow} alt="Logo" className="h-16 mx-auto object-contain mb-4" />
         <select
