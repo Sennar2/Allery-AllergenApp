@@ -135,25 +135,36 @@ function App() {
     : "/logos/allerlylogo.png";
 
   if (!accepted) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-white px-4 text-center">
-        <div>
-          <img src="/logos/allerlylogo.png" alt="Allerly" className="mx-auto h-20 mb-4" />
-          <p className="mb-4 text-gray-700 text-lg max-w-lg">
-            Welcome to Allerly. Click on accept to start. 
-            Data provided by the venue might not be a reflection of a last-minute menu change. 
-            Always check with your server.
-          </p>
-          <button
-            onClick={() => setAccepted(true)}
-            className="px-5 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700"
-          >
-            Let's Go
-          </button>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-emerald-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center border border-green-100">
+        <div className="mb-6">
+          <img 
+            src="/logos/allerlylogo.png" 
+            alt="Allerly" 
+            className="mx-auto h-24 object-contain"
+          />
         </div>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          Welcome to Allerly
+        </h1>
+        <div className="bg-amber-50 border-l-4 border-amber-300 p-4 mb-6 rounded-lg text-left">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            <span className="font-semibold">Important:</span> Data provided by the venue might not reflect last-minute menu changes. 
+            <span className="font-semibold"> Always check with your server</span> before ordering.
+          </p>
+        </div>
+        <button
+          onClick={() => setAccepted(true)}
+          className="w-full px-6 py-3.5 bg-green-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-lg hover:bg-green-600 transition-all duration-200"
+        >
+          Let's Go 🍽️
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return (
     <div className="min-h-screen bg-gray-50">
